@@ -7,10 +7,10 @@ RUN chown ${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} .
 
 USER irisowner
 
-COPY  Installer.cls .
-COPY  SQLPriv.xml .
-COPY  src src
+COPY --chown=${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} . .
 COPY irissession.sh /
+RUN VERSION=$(grep -oP '(?<=<Version>).*?(?=</Version>)' module.xml) && \
+    sed -i "s/Parameter VERSION.*/Parameter VERSION = \"${VERSION}\";/" ./src/CLS/ZPM/Registry.cls
 SHELL ["/irissession.sh"]
 
 RUN \

@@ -2,6 +2,8 @@
 Class ZPM.Registry Extends ZPM.REST.Base
 {
 
+Parameter VERSION = "1.0.0";
+
 XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 {
 <Routes>
@@ -47,7 +49,13 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 /// Package Manager general information
 ClassMethod GetInfo() As %Status
 {
-  SET version = $get(^RegistryVersion, "0.0.2")
+  SET version = ..#VERSION
+  If $System.CLS.IsMthd("%ZPM.PackageManager.Developer.Module", "NameOpen") {
+    Set zpmModule = ##class(%ZPM.PackageManager.Developer.Module).NameOpen("zpm-registry")
+    If $IsObject(zpmModule) {
+      Set version = zpmModule.VersionString
+    }
+  }
   SET info = {
     "version": (version)
   }
